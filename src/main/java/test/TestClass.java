@@ -18,10 +18,10 @@ import static tools.DIGITS.SEVEN;
 import static tools.DIGITS.SIX;
 
 public class TestClass extends BaseClass {
-    FlashScoreHomePage flashScoreHomePage;
-    NavigationPage navigationPage;
-    EverandPage everandPage;
-    BET365Page bet365Page;
+    private FlashScoreHomePage flashScoreHomePage;
+    private NavigationPage navigationPage;
+    private EverandPage everandPage;
+    private BET365Page bet365Page;
     private Random ran = new Random();
 
 
