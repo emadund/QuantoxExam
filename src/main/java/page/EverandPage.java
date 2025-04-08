@@ -23,7 +23,7 @@ public class EverandPage extends BaseClass {
     }
 
     public void clickOnWishedCategory (String category) {
-        clickOnItemOfDropDownMenu(ebooks,BESTSELLERS);
+        clickOnItemOfDropDownMenu(ebooks,category);
     }
 
 
