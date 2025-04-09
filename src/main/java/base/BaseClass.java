@@ -58,14 +58,19 @@ public class BaseClass extends UtilsBaseClass{
 
     protected void initializaton (@Optional("chrome") String browser, Method m, ITestResult iTestResult) {
         logger = extent.createTest(m.getName());
-        driver = new ChromeDriver();
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--start-maximized");
+        options.addArguments("--disable-blink-features=AutomationControlled");
+        driver = new ChromeDriver(options);
         wdWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
         js = (JavascriptExecutor) driver;
         driver.manage().window().maximize();
     }
     /*
-    After tests are done, we need to close our webdriver. And to complete our report
-    In case you want to let browser open to check out what happened at the end, please put this method under comment!
+     * After tests are done, we need to close our webdriver. And to complete our report
+     * In case you want to let browser open to check out what happened at the end, please put this method under comment!
      */
 
     @AfterMethod
