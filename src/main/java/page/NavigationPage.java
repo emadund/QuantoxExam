@@ -35,8 +35,8 @@ public class NavigationPage extends BaseClass {
      */
     public void openNewTab(){
             wdWait.until(ExpectedConditions.numberOfWindowsToBe(2));
-            ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-            driver.switchTo().window(tabs.get(1));
+            ArrayList<String> tabs = new ArrayList<>(getDriver().getWindowHandles());
+            getDriver().switchTo().window(tabs.get(1));
         }
     /*
      * Move to previous tab
