@@ -4,14 +4,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.BeforeMethod;
 
-import javax.swing.*;
 
 public class UtilsBaseClass {
 
@@ -19,13 +15,6 @@ public class UtilsBaseClass {
     protected static WebDriverWait wdWait;
     protected static JavascriptExecutor js;
 
-
-
-    public void setDriver() {
-        if (driver==null) {
-            driver = new ChromeDriver();
-        }
-    }
 
     protected WebDriver getDriver() {
         return driver;
@@ -55,20 +44,10 @@ public class UtilsBaseClass {
         }
     }
 
-    /*
-     * This we will use if not regular click is possible
-     */
-    protected void jsElementClick(WebElement element){
 
-        try { wdWait.until(ExpectedConditions.elementToBeClickable(element));
-            js.executeScript("arguments[0].click();", element);
-        } catch (Exception e) {
-            e.getMessage();
-            e.printStackTrace();
-        }
-    }
     /*
      * Setting implicit fixed time for waiting for program to continue
+     * @param - miliseconds
      */
 
     protected void waitImplicit(int miliseconds) {
@@ -80,18 +59,6 @@ public class UtilsBaseClass {
         }
     }
 
-    /*
-     * Checking if element is showing up on page
-     */
-    protected boolean isElementDisplayed(WebElement element) {
-        try { wdWait.until(ExpectedConditions.visibilityOf(element));
-            return element.isDisplayed();
-        } catch (Exception e) {
-            e.getMessage();
-            e.printStackTrace();
-            return false;
-        }
-    }
     /*
      * Simple click on element after it appears
      */
@@ -122,7 +89,7 @@ public class UtilsBaseClass {
         }
     }
     /*
-     * Hover over dropdown and click on target element
+     * Hover over dropdown and click on target element with wished category by link text
      */
     protected void clickOnItemOfDropDownMenu (WebElement dropdown, String category) {
         try {
@@ -166,7 +133,7 @@ public class UtilsBaseClass {
         }
     }
     /*
-    In case of issues with regular click, we will use this method
+     * In case of issues with regular click, we will use this method
      */
     protected void jsClick (WebElement element) {
         try {

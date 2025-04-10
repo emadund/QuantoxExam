@@ -40,9 +40,6 @@ public class BET365Page extends BaseClass {
     @FindBy (xpath = "//div[@class='oam-FieldTab_TabTitle '][1]")
     WebElement personalInfo;
 
-    @FindBy (xpath = "//div[@class='oam-FieldTab_TabTitle '][2]")
-    WebElement identificationCard;
-
     @FindBy (css=".fml-ErrorMessage.svn-FieldInputTextPlaceholder_ErrorMessage")
     WebElement errorMessage;
 
@@ -69,9 +66,6 @@ public class BET365Page extends BaseClass {
         clickOnElement(personalInfo);
     }
 
-    public void clickOnIdentificationCard() {
-        clickOnElement(identificationCard);
-    }
 
     public BET365Page fillMandatoryFields() {
         fillTextElement(email,"dundaetf@gmail.com");

@@ -1,19 +1,18 @@
 package page;
 
 import base.BaseClass;
-import org.openqa.selenium.WindowType;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
-
-import static java.sql.DriverManager.getDriver;
 
 public class NavigationPage extends BaseClass {
 
     public NavigationPage() {
         PageFactory.initElements(getDriver(),this);
     }
+
+    // Actions:
 
     /*
      * Navigate to provided url

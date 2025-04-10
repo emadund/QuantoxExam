@@ -10,7 +10,9 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
@@ -20,12 +22,13 @@ import org.testng.annotations.Optional;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class BaseClass extends UtilsBaseClass{
 
-    private static final ThreadLocal<WebDriver> driverThreadLocal = new ThreadLocal<>();
-    public static ThreadLocal<String> testPlatform = new ThreadLocal<>();
+
     private final String fs = File.separator;
     public ExtentHtmlReporter htmlReporter;
     public static ExtentReports extent;
@@ -54,11 +57,43 @@ public class BaseClass extends UtilsBaseClass{
     protected void initializaton (@Optional("chrome") String browser, Method m, ITestResult iTestResult) {
         logger = extent.createTest(m.getName());
         WebDriverManager.chromedriver().setup();
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("profile.block_third_party_cookies", true);
+        prefs.put("profile.default_content_setting_values.plugins", 1);
+        prefs.put("profile.content_settings.plugin_whitelist.adobe-flash-player", 1);
+        prefs.put("profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player", 1);
+        prefs.put("credentials_enable_service", false);
+        prefs.put("profile.password_manager_enabled", false);
+        // Enable Flash for this site        prefs.put("PluginsAllowedForUrls", "https://www.bet365.rs/#/HO/");
+        prefs.put("PluginsAllowedForUrls", "https://www.bet365.rs/#/HO/");
         ChromeOptions options = new ChromeOptions();
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+        options.setExperimentalOption("prefs",prefs);
+        options.addArguments("chrome.switches","--disable-extensions");
+        options.addArguments("--incognito");
+        options.addArguments("--ignore-certificate-errors");
+        options.addArguments("--disable-popup-blocking");
+        options.addArguments("--disable-default-apps");
+        options.addArguments("--test-type");
+        options.addArguments("--disable-bundled-ppapi-flash");
+        options.addArguments("--disable-extensions");
+        options.addArguments("--profile-directory=Default");
+        options.addArguments("--disable-plugins-discovery");
+        options.addArguments("--block-third-party-cookies");
         options.addArguments("--remote-allow-origins=*");
-        options.addArguments("--start-maximized");
         options.addArguments("--disable-blink-features=AutomationControlled");
+        options.addArguments("--start-maximized");
+        options.addArguments("--allow-outdated-plugins");
         driver = new ChromeDriver(options);
+        /*
+         * Tried with Firefox and Edge driver. Same thing happens with bet365 registration page.
+         */
+//        WebDriverManager.firefoxdriver().setup();
+//        driver=new FirefoxDriver();
+//        WebDriverManager.edgedriver().setup();
+//        driver=new EdgeDriver();
+        driver.manage().deleteAllCookies();
         wdWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(10));
         js = (JavascriptExecutor) driver;
         driver.manage().window().maximize();

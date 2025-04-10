@@ -31,7 +31,7 @@ public class TestClass extends BaseClass {
     }
 
 
-    @Test(priority = 10, description = "Testing functionality of dark theme")
+    @Test(priority = 10, description = "Testing functionality of switching dark/light theme")
 
     public void flashScoreTheme() {
         flashScoreHomePage = new FlashScoreHomePage();
@@ -41,14 +41,22 @@ public class TestClass extends BaseClass {
         checkPageIsReady();
         Reporter.log("Remove cookie", true);
         flashScoreHomePage.clickOnCookie();
+        waitImplicit(1000);
         String firstColorHex = flashScoreHomePage.colorOfElement();
         Reporter.log("Background color of page in hex is: " + firstColorHex, true);
         flashScoreHomePage.clickOnMenu();
+        waitImplicit(1000);
         Reporter.log("Click on dark theme, background of page should be changed", true);
         flashScoreHomePage.clickOnTheme();
+        waitImplicit(1000);
         Reporter.log("Checking out if background color is swiched", true);
         Assert.assertNotEquals(firstColorHex, flashScoreHomePage.colorOfElement(), "background of home page didn't switch! Test 1 failed!");
         Reporter.log("Now the background of home page in hex is: " + flashScoreHomePage.colorOfElement(), true);
+        Reporter.log("Let's switch back to check if it will restore the default theme: ",true);
+        flashScoreHomePage.clickOnTheme();
+        waitImplicit(1000);
+        Assert.assertEquals(firstColorHex, flashScoreHomePage.colorOfElement(), "background of home page didn't switch! Test 1 failed!");
+        Reporter.log("It restored previous theme color.",true);
         Reporter.log("Test 1 passed!", true);
     }
 
@@ -59,15 +67,16 @@ public class TestClass extends BaseClass {
         this.flashScoreTheme();
         printHeaderLogs("2. App Store redirects to apple page test");
         Reporter.log("Scroll way down to the bottom of page", true);
-        waitImplicit(2000);
+        waitImplicit(1000);
         flashScoreHomePage.scrollToTheBottomOfThePage();
         Reporter.log("Click on app store", true);
-        waitImplicit(2000);
+        waitImplicit(1000);
         flashScoreHomePage.clickJsOnAppStore();
-        // flashScoreHomePage.clickOnAppStore(); For some strange reason it puts back on the top of the page
-        // flashScoreHomePage.clickOnAppStore(); It works after second click method, so it is better to use js click
+        // instead of above method, you can use two below. Just uncomment and it will work.
+        // flashScoreHomePage.clickOnAppStore(); // For some strange reason it puts back on the top of the page
+        // flashScoreHomePage.clickOnAppStore(); // It works after second click method, so it is better to use js click
         Reporter.log("Check out if it is redirected to another page");
-        waitImplicit(2000);
+        waitImplicit(1000);
         navigationPage.openNewTab();
         checkPageIsReady();
         Assert.assertTrue(getDriver().getCurrentUrl().startsWith(FLASHSCORE_RESULTS), "It didn't redirected where we expected. Test 2 failed!");
@@ -85,14 +94,14 @@ public class TestClass extends BaseClass {
         Reporter.log("Remove cookie", true);
         flashScoreHomePage.clickOnCookie();
         Reporter.log("From the top menu we choose tennis sport:", true);
-        waitImplicit(2000);
+        waitImplicit(1000);
         flashScoreHomePage.clickOnWishedSport(TENNIS);
         Reporter.log("Checking if it redirected to tennis page", true);
-        waitImplicit(2000);
+        waitImplicit(1000);
         checkPageIsReady();
         Assert.assertEquals(getDriver().getCurrentUrl(), FLASHSCORE_HOMEPAGE + "tennis/", "It didn't redirect to tennis page. Test 3 failed!");
         navigationPage.navigateBack();
-        waitImplicit(2000);
+        waitImplicit(1000);
         checkPageIsReady();
         Reporter.log("Checking if it returned back to home page", true);
         Assert.assertEquals(getDriver().getCurrentUrl(), FLASHSCORE_HOMEPAGE, "It didn't return to home page. Test 3 failed");
@@ -106,15 +115,16 @@ public class TestClass extends BaseClass {
         printHeaderLogs("4. Bestseller books page test");
         Reporter.log("Navigate to everand home page", true);
         navigationPage.navigateToPage(EVERAND);
-        waitImplicit(2000);
+        waitImplicit(1000);
         checkPageIsReady();
         Reporter.log("Hover over eBooks and pick Bestsellers", true);
         everandPage.clickOnWishedCategory(BESTSELLERS);
-        waitImplicit(2000);
+        waitImplicit(1000);
         checkPageIsReady();
         Reporter.log("Check if it redirected to submenu bestsellers/books", true);
         Assert.assertEquals(getDriver().getCurrentUrl(), EVERAND + "bestsellers/books", "It didn't redirect to bestseller page. Test 4 failed!");
         Reporter.log("Test 4 passed!", true);
+
     }
 
     @Test(priority = 50, description = "Checking mobile phone number field during registration at bet365 site")
@@ -131,6 +141,7 @@ public class TestClass extends BaseClass {
         Reporter.log("Click on registration button",true);
         bet365Page.clickOnRegistration();
         waitImplicit(1000);
+        checkPageIsReady();
         Reporter.log("Fill all other mandatory fields except phone number:", true);
         bet365Page.fillMandatoryFields();
         waitImplicit(1000);
@@ -163,33 +174,106 @@ public class TestClass extends BaseClass {
         bet365Page.fillPhoneField(String.valueOf(boundaryValue));
         bet365Page.clickOnSubmit();
         Assert.assertTrue(bet365Page.getIdentificationDocumentText().startsWith("Za državljane Republike Srbije"));
-        bet365Page.clickOnIdentificationCard();
+        bet365Page.clickOnPersonalInfo();
+        /*
+         * There are 8 negative border values:
+         * 1) 059999999
+         * 2) 0599999999
+         * 3) 070000000
+         * 4) 0700000000
+         * 5) 59999999
+         * 6) 599999999
+         * 7) 70000000
+         * 8) 700000000
+         */
         Reporter.log("Now, lets decrease input below bottom boundary value and check out an error field",true);
         waitImplicit(1000);
         bet365Page.fillPhoneField(String.valueOf(--boundaryValue));
         Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
         Reporter.log("Testing bottom boundary value is passed!",true);
         waitImplicit(1000);
-        Reporter.log("Now let's check top boundary vaule with 699999999",true);
+        Reporter.log("Now let's check top boundary vaule with 699999999, 7-digit number",true);
         boundaryValue=699999999L;
+        waitImplicit(1000);
         bet365Page.fillPhoneField(String.valueOf(boundaryValue));
         bet365Page.clickOnSubmit();
         Assert.assertTrue(bet365Page.getIdentificationDocumentText().startsWith("Za državljane Republike Srbije"));
         Reporter.log("Testing with top boundary value is passed!",true);
         waitImplicit(1000);
         Reporter.log("Now, let's test invalid top boundary value increasing input: ",true);
+        bet365Page.clickOnPersonalInfo();
+        waitImplicit(1000);
         bet365Page.fillPhoneField(String.valueOf(++boundaryValue));
         bet365Page.clickOnSubmit();
         Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
         Reporter.log("Testing bottom boundary value is passed!", true);
         waitImplicit(1000);
-        Reporter.log("Let's test with empty field left.",true);
-        bet365Page.fillPhoneField("");
+        Reporter.log("Let's check valid bottom 7-digit boundary value: ", true);
+        boundaryValue=600000000L;
+        bet365Page.fillPhoneField(String.valueOf(boundaryValue));
+        Assert.assertTrue(bet365Page.getIdentificationDocumentText().startsWith("Za državljane Republike Srbije"));
+        Reporter.log("Testing with bottom boundary value is passed!",true);
+        waitImplicit(1000);
+        Reporter.log("Now let's decrease input value: ",true);
+        bet365Page.clickOnPersonalInfo();
+        bet365Page.fillPhoneField(String.valueOf(--boundaryValue));
+        Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
+        waitImplicit(1000);
+        Reporter.log("Testing with negative bottom input value is passed",true);
+        Reporter.log("Now let's check top boundary vaule with 699999999, 6-digit number",true);
+        boundaryValue=69999999L;
+        waitImplicit(1000);
+        bet365Page.fillPhoneField(String.valueOf(boundaryValue));
+        bet365Page.clickOnSubmit();
+        Assert.assertTrue(bet365Page.getIdentificationDocumentText().startsWith("Za državljane Republike Srbije"));
+        Reporter.log("Testing with top boundary value is passed!",true);
+        waitImplicit(1000);
+        Reporter.log("Now, let's test invalid top boundary value increasing input: ",true);
+        bet365Page.clickOnPersonalInfo();
+        waitImplicit(1000);
+        bet365Page.fillPhoneField(String.valueOf(++boundaryValue));
+        bet365Page.clickOnSubmit();
+        Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
+        Reporter.log("Testing bottom boundary value is passed!", true);
+        waitImplicit(1000);
+        Reporter.log("Let's check valid bottom 6-digit boundary value: ", true);
+        boundaryValue=60000000L;
+        bet365Page.fillPhoneField(String.valueOf(boundaryValue));
+        Assert.assertTrue(bet365Page.getIdentificationDocumentText().startsWith("Za državljane Republike Srbije"));
+        Reporter.log("Testing with bottom boundary value is passed!",true);
+        waitImplicit(1000);
+        Reporter.log("Now let's decrease input value: ",true);
+        bet365Page.clickOnPersonalInfo();
+        bet365Page.fillPhoneField(String.valueOf(--boundaryValue));
+        Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
+        waitImplicit(1000);
+        Reporter.log("Testing with negative bottom input value is passed",true);
+        Reporter.log("Now let's test negative 6-digit inputs values with leading 0:",true);
+        Reporter.log("Bottom boundary value leading 0: ",true);
+        bet365Page.fillPhoneField("059999999");
+        waitImplicit(1000);
+        bet365Page.clickOnSubmit();
+        Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
+        waitImplicit(1000);
+        Reporter.log("Top boundary  value leading 0: ",true);
+        bet365Page.fillPhoneField("070000000");
+        waitImplicit(1000);
+        bet365Page.clickOnSubmit();
+        Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
+        Reporter.log("Now let's test negative 7-digit inputs values with leading 0:",true);
+        Reporter.log("Bottom boundary value leading 0: ",true);
+        bet365Page.fillPhoneField("0599999999");
+        waitImplicit(1000);
+        bet365Page.clickOnSubmit();
+        Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
+        waitImplicit(1000);
+        Reporter.log("Top boundary  value leading 0: ",true);
+        bet365Page.fillPhoneField("0700000000");
+        waitImplicit(1000);
         bet365Page.clickOnSubmit();
         Assert.assertEquals(bet365Page.getErrorText(),"Obavezno","It allows phone number which shouldn't happen");
         Reporter.log("Test 5 passed! ");
     }
-
 
     private void printHeaderLogs(String testNameAndDescription) {
         System.out.println("===========================================================================");
@@ -212,8 +296,9 @@ public class TestClass extends BaseClass {
                     temp += String.valueOf(ran.nextInt(10));
                 }
                 return temp;
+            default: return temp;
         }
-        return temp;
+
     }
     private void generatingRandomNumber(DIGITS digits) {
         for (int i = 0; i <= 9; i++) {
